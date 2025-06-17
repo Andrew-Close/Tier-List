@@ -48,10 +48,32 @@
             </div>
         </div>
     </div>
-    <div class="photo-container">
+    <form method="POST">
+        <input id="name-input" type="text" name="name">
+        <button type="submit" name="S-button" formaction="/move/S">S</button>
+        <button type="submit" name="A-button" formaction="/move/A">A</button>
+        <button type="submit" name="B-button" formaction="/move/B">B</button>
+        <button type="submit" name="C-button" formaction="/move/C">C</button>
+        <button type="submit" name="D-button" formaction="/move/D">D</button>
+    </form>
+    <div id="photo-container-id" class="photo-container">
         {% for image in images %}
-        <img src="static/{{ image }}">
+        <img id="{{ image }}" src="static/{{ image }}" onclick="fillNameField('{{ image }}')">
         {% endfor %}
     </div>
+    <script>
+        function fillNameField(name) {
+            nameInput = document.getElementById("name-input");
+            nameInput.value = name;
+            all_images = document.getElementById("photo-container-id").children;
+            for (let i = 0; i < all_images.length; i++) {
+                if (all_images[i].id == name) {
+                    all_images[i].className = "active-image";
+                } else {
+                    all_images[i].className = "";
+                }
+            }
+        }
+    </script>
 </body>
 </html>

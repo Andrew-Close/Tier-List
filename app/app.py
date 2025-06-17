@@ -9,7 +9,7 @@ from PIL.ExifTags import TAGS
 app = Flask(__name__,
     instance_path=os.path.join(os.path.dirname(os.path.dirname(__file__)), 'instance'),
     instance_relative_config=True)
-app.config.from_object("app.config")
+app.config.from_object("config")
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 source_folder = "source-photos/"
@@ -43,7 +43,7 @@ def save_all_images():
         path = source_folder + image["name"]
         image_source = open(path, "rb")
         binary_source = image_source.read()
-        new_image = open("app/static/image" + str(counter) + ".jpg", "wb")
+        new_image = open("static/image" + str(counter) + ".jpg", "wb")
         new_image.write(binary_source)
         new_image_names.append("image" + str(counter) + ".jpg")
         counter += 1
@@ -51,10 +51,23 @@ def save_all_images():
 
 def get_saved_images():
     name_list = []
-    for name in os.listdir("app/static"):
+    for name in os.listdir("static"):
         if name.startswith("image"):
             name_list.append(name)
+    name_list = sorted(name_list, key=lambda name: get_name_number(name))
     return name_list
+
+def get_name_number(name):
+    starting_index = -1
+    for i in range(len(name)):
+        if name[i].isdigit():
+            if starting_index == -1:
+                starting_index = i
+        else:
+            if not starting_index == -1:
+                ending_index = i
+                return int(name[starting_index:ending_index])
+    raise Exception("Something went wrong in get_name_number")
 
 new_image_names = get_saved_images()
 
