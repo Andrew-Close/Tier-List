@@ -6,8 +6,52 @@
     <link rel="stylesheet" href="static/style.css">
 </head>
 <body>
-    {% for image in images %}
-    <img src="static/{{ image }}">
-    {% endfor %}
+    <div class="tier-list-container">
+        <div class="tier-list-row">
+            <div class="row-label" style="background-color: red;">
+                <p class="row-label-text">S</p>
+            </div>
+            <div class="row-content">
+
+            </div>
+        </div>
+        <div class="tier-list-row">
+            <div class="row-label" style="background-color: orange;">
+                <p class="row-label-text">A</p>
+            </div>
+            <div class="row-content">
+
+            </div>
+        </div>
+        <div class="tier-list-row">
+            <div class="row-label" style="background-color: yellow;">
+                <p class="row-label-text">B</p>
+            </div>
+            <div class="row-content">
+
+            </div>
+        </div>
+        <div class="tier-list-row">
+            <div class="row-label" style="background-color: green;">
+                <p class="row-label-text">C</p>
+            </div>
+            <div class="row-content">
+
+            </div>
+        </div>
+        <div class="tier-list-row">
+            <div class="row-label" style="background-color: blue;">
+                <p class="row-label-text">D</p>
+            </div>
+            <div class="row-content">
+
+            </div>
+        </div>
+    </div>
+    <div class="photo-container">
+        {% for image in images %}
+        <img src="static/{{ image }}">
+        {% endfor %}
+    </div>
 </body>
 </html>
