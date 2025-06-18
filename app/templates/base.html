@@ -11,7 +11,7 @@
             <div class="row-label" style="background-color: red;">
                 <p class="row-label-text">S (absolutely peak, some of my favorites)</p>
             </div>
-            <div class="row-content">
+            <div id="s-content" class="row-content">
                 {% for image in s_images %}
                 <img id="{{ image }}" src="static/{{ image }}" onclick="fillNameField('{{ image }}')">
                 {% endfor %}
@@ -21,7 +21,7 @@
             <div class="row-label" style="background-color: orange;">
                 <p class="row-label-text">A (very good photos, some that I like a lot)</p>
             </div>
-            <div class="row-content">
+            <div id="a-content" class="row-content">
                 {% for image in a_images %}
                 <img id="{{ image }}" src="static/{{ image }}" onclick="fillNameField('{{ image }}')">
                 {% endfor %}
@@ -31,7 +31,7 @@
             <div class="row-label" style="background-color: yellow;">
                 <p class="row-label-text">B (good photos, not memorable but still good)</p>
             </div>
-            <div class="row-content">
+            <div id="b-content" class="row-content">
                 {% for image in b_images %}
                 <img id="{{ image }}" src="static/{{ image }}" onclick="fillNameField('{{ image }}')">
                 {% endfor %}
@@ -41,7 +41,7 @@
             <div class="row-label" style="background-color: green;">
                 <p class="row-label-text">C (ok photos, but not my favorites)</p>
             </div>
-            <div class="row-content">
+            <div id="c-content" class="row-content">
                 {% for image in c_images %}
                 <img id="{{ image }}" src="static/{{ image }}" onclick="fillNameField('{{ image }}')">
                 {% endfor %}
@@ -51,7 +51,7 @@
             <div class="row-label" style="background-color: blue;">
                 <p class="row-label-text">D (not good)</p>
             </div>
-            <div class="row-content">
+            <div id="d-content" class="row-content">
                 {% for image in d_images %}
                 <img id="{{ image }}" src="static/{{ image }}" onclick="fillNameField('{{ image }}')">
                 {% endfor %}
@@ -65,6 +65,7 @@
         <button type="submit" name="B-button" formaction="/move/B">B</button>
         <button type="submit" name="C-button" formaction="/move/C">C</button>
         <button type="submit" name="D-button" formaction="/move/D">D</button>
+        <button type="submit" name="remove-button" formaction="/remove">Remove</button>
     </form>
     <div id="photo-container-id" class="photo-container">
         {% for image in unranked_images %}
@@ -75,7 +76,14 @@
         function fillNameField(name) {
             nameInput = document.getElementById("name-input");
             nameInput.value = name;
-            all_images = document.getElementById("photo-container-id").children;
+            s_images = document.getElementById("s-content").children;
+            a_images = document.getElementById("a-content").children;
+            b_images = document.getElementById("b-content").children;
+            c_images = document.getElementById("c-content").children;
+            d_images = document.getElementById("d-content").children;
+            unranked_images = document.getElementById("photo-container-id").children;
+            all_images = [...s_images, ...a_images, ...b_images, ...c_images, ...d_images, ...unranked_images];
+
             for (let i = 0; i < all_images.length; i++) {
                 if (all_images[i].id == name) {
                     all_images[i].className = "active-image";

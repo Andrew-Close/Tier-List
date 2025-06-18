@@ -138,6 +138,35 @@ def move(rank):
         d_images = get_saved_images("D")
     return redirect("/")
 
+@app.route("/remove", methods=["POST"])
+def remove():
+    image_name = request.form.get("name")
+    old_rank = None
+    if image_name == "":
+        return redirect("/")
+    target_image = db.session.execute(db.select(ImageModel).where(ImageModel.name == image_name)).scalars().first()
+    if target_image is not None:
+        old_rank = target_image.rank
+        db.session.delete(target_image)
+        db.session.commit()
+
+    if old_rank == "S":
+        global s_images
+        s_images = get_saved_images("S")
+    if old_rank == "A":
+        global a_images
+        a_images = get_saved_images("A")
+    if old_rank == "B":
+        global b_images
+        b_images = get_saved_images("B")
+    if old_rank == "C":
+        global c_images
+        c_images = get_saved_images("C")
+    if old_rank == "D":
+        global d_images
+        d_images = get_saved_images("D")
+    return redirect("/")
+
 # with app.app_context():
 #     image = ImageModel.query.get(5)
 #     db.session.delete(image)
