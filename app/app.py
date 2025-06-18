@@ -179,8 +179,10 @@ def remove():
     target_image = db.session.execute(db.select(ImageModel).where(ImageModel.name == image_name)).scalars().first()
     if target_image is not None:
         old_rank = target_image.rank
+        old_order = target_image.order
         db.session.delete(target_image)
         db.session.commit()
+        fix_orders(old_order, old_rank)
     update_local_images(old_rank=old_rank)
     return redirect("/")
 
