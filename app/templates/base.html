@@ -66,8 +66,9 @@
         <button type="submit" name="C-button" formaction="/move/C">C</button>
         <button type="submit" name="D-button" formaction="/move/D">D</button>
         <button type="submit" name="remove-button" formaction="/remove">Remove</button>
-        <input type="text" name="order-input" placeholder="Order">
+        <input type="text" name="order" placeholder="Order">
         <button type="submit" name="change-order-button" formaction="/change-order">Change Order</button>
+        <button type="submit" name="export-list" formaction="/export-list">Export List</button>
     </form>
     <div id="photo-container-id" class="photo-container">
         {% for image in unranked_images %}

@@ -3,3 +3,4 @@
 app/static/image*.jpg
 app/source-photos
 instance
+app/exported-list

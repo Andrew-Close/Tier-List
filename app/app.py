@@ -111,11 +111,20 @@ def update_local_images(rank=None, old_rank=None):
         global d_images
         d_images = get_saved_images("D")
 
-def fix_orders(old_order, old_rank):
+# Shifts orders to the left to fill gap
+def fix_orders(order, rank):
     with app.app_context():
-        images_to_fix = db.session.execute(db.select(ImageModel).where(and_((ImageModel.order > old_order) & (ImageModel.rank == old_rank)))).scalars().all()
+        images_to_fix = db.session.execute(db.select(ImageModel).where(and_((ImageModel.order > order) & (ImageModel.rank == rank)))).scalars().all()
         for image in images_to_fix:
             image.order = image.order - 1
+        db.session.commit()
+
+# Shifts orders to the right to create a gap for the insertion of an image
+def shift_orders(order, rank):
+    with app.app_context():
+        images_to_shift = db.session.execute(db.select(ImageModel).where((ImageModel.order > order) & (ImageModel.rank == rank))).scalars().all()
+        for image in images_to_shift:
+            image.order = image.order + 1
         db.session.commit()
 
 def get_highest_order(rank):
@@ -185,6 +194,60 @@ def remove():
         fix_orders(old_order, old_rank)
     update_local_images(old_rank=old_rank)
     return redirect("/")
+
+@app.route("/change-order", methods=["POST"])
+def change_order():
+    image_name = request.form.get("name")
+    new_order = int(request.form.get("order"))
+    target_image = db.session.execute(db.select(ImageModel).where(ImageModel.name == image_name)).scalars().first()
+
+    if target_image is None:
+        return redirect("/")
+
+    old_order = target_image.order
+    rank = target_image.rank
+    if new_order > old_order:
+        pointer = new_order
+        # Make gap
+        shift_orders(pointer, rank)
+        pointer += 1
+        # Place in gap
+        target_image.order = pointer
+        db.session.commit()
+        # Remove gap made by moving image
+        fix_orders(old_order, rank)
+    else:
+        pointer = new_order
+        pointer -= 1
+        # Make gap
+        shift_orders(pointer, rank)
+        pointer += 1
+        # Place in gap
+        target_image.order = pointer
+        db.session.commit()
+        # Remove gap made by moving image
+        fix_orders(old_order, rank)
+    update_local_images(rank=rank)
+    return redirect("/")
+
+@app.route("/export-list", methods=["POST"])
+def export_list():
+    os.makedirs("exported-list", exist_ok=True)
+    exported_list = open("exported-list/exported-list.txt", "wt")
+    s_images = db.session.execute(db.select(ImageModel).where(ImageModel.rank == "S").order_by(ImageModel.order)).scalars().all()
+    a_images = db.session.execute(db.select(ImageModel).where(ImageModel.rank == "A").order_by(ImageModel.order)).scalars().all()
+    b_images = db.session.execute(db.select(ImageModel).where(ImageModel.rank == "B").order_by(ImageModel.order)).scalars().all()
+    c_images = db.session.execute(db.select(ImageModel).where(ImageModel.rank == "C").order_by(ImageModel.order)).scalars().all()
+    d_images = db.session.execute(db.select(ImageModel).where(ImageModel.rank == "D").order_by(ImageModel.order)).scalars().all()
+    all_images = [s_images, a_images, b_images, c_images, d_images]
+    counter = 1
+    for image_row in all_images:
+        for image in image_row:
+            exported_list.write("{} {}\n".format(image.name, counter))
+            counter += 1
+    exported_list.close()
+    return redirect("/")
+
 
 # with app.app_context():
 #     image = ImageModel.query.get(1)
