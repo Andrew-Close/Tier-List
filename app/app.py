@@ -33,6 +33,9 @@ class ImageModel(db.Model):
     rank = db.Column(db.Integer)
     order = db.Column(db.Integer)
 
+with app.app_context():
+    db.create_all()
+
 class StaticResourceLogFilter(logging.Filter):
     def filter(self, record):
         return "/static/" not in record.getMessage()
@@ -306,12 +309,6 @@ def upload_images():
         file.save(os.path.join(temp_path, filename))
     save_all_images()
     return redirect("/")
-
-
-# with app.app_context():
-#     image = ImageModel.query.get(1)
-#     db.session.delete(image)
-#     db.session.commit()
 
 logger.addFilter(StaticResourceLogFilter())
 init_directories()
