@@ -1,6 +1,6 @@
 .venv
 .idea
-app/static/image*.jpg
+app/static/uploaded-images/image*.jpg
 app/source-photos
 instance
 app/exported-list

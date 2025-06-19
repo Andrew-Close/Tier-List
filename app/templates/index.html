@@ -14,7 +14,7 @@
             <div class="row-content">
                 {% for image in s_images %}
                 <div class="ranked-photo-container">
-                    <img class="usable-photo" id="{{ image.name }}" src="static/{{ image.name }}" onclick="fillNameField('{{ image.name }}')">
+                    <img class="usable-photo" id="{{ image.name }}" src="static/uploaded-images/{{ image.name }}" onclick="fillNameField('{{ image.name }}')">
                     <p class="order-label" onclick="changeOrder({{ image.order }})">{{ image.order }}</p>
                 </div>
                 {% endfor %}
@@ -27,7 +27,7 @@
             <div class="row-content">
                 {% for image in a_images %}
                 <div class="ranked-photo-container">
-                    <img class="usable-photo" id="{{ image.name }}" src="static/{{ image.name }}" onclick="fillNameField('{{ image.name }}')">
+                    <img class="usable-photo" id="{{ image.name }}" src="static/uploaded-images/{{ image.name }}" onclick="fillNameField('{{ image.name }}')">
                     <p class="order-label" onclick="changeOrder({{ image.order }})">{{ image.order }}</p>
                 </div>
                 {% endfor %}
@@ -40,7 +40,7 @@
             <div class="row-content">
                 {% for image in b_images %}
                 <div class="ranked-photo-container">
-                    <img class="usable-photo" id="{{ image.name }}" src="static/{{ image.name }}" onclick="fillNameField('{{ image.name }}')">
+                    <img class="usable-photo" id="{{ image.name }}" src="static/uploaded-images/{{ image.name }}" onclick="fillNameField('{{ image.name }}')">
                     <p class="order-label" onclick="changeOrder({{ image.order }})">{{ image.order }}</p>
                 </div>
                 {% endfor %}
@@ -53,7 +53,7 @@
             <div class="row-content">
                 {% for image in c_images %}
                 <div class="ranked-photo-container">
-                    <img class="usable-photo" id="{{ image.name }}" src="static/{{ image.name }}" onclick="fillNameField('{{ image.name }}')">
+                    <img class="usable-photo" id="{{ image.name }}" src="static/uploaded-images/{{ image.name }}" onclick="fillNameField('{{ image.name }}')">
                     <p class="order-label" onclick="changeOrder({{ image.order }})">{{ image.order }}</p>
                 </div>
                 {% endfor %}
@@ -66,7 +66,7 @@
             <div class="row-content">
                 {% for image in d_images %}
                 <div class="ranked-photo-container">
-                    <img class="usable-photo" id="{{ image.name }}" src="static/{{ image.name }}" onclick="fillNameField('{{ image.name }}')">
+                    <img class="usable-photo" id="{{ image.name }}" src="static/uploaded-images/{{ image.name }}" onclick="fillNameField('{{ image.name }}')">
                     <p class="order-label" onclick="changeOrder({{ image.order }})">{{ image.order }}</p>
                 </div>
                 {% endfor %}
@@ -87,9 +87,14 @@
         <div class="button-spacing"></div>
         <button type="submit" name="export-list" formaction="/export-list">Export List</button>
     </form>
+    <form action="/upload-images" method="POST" enctype="multipart/form-data">
+        <button type="button" onclick="document.getElementById('images-upload').click();">Upload Images</button>
+        <input id="images-upload" type="file" name="images" accept="image/jpeg, image/png" multiple onchange="document.getElementById('images-submit').click();">
+        <button id="images-submit" type="submit">Submit</button>
+    </form>
     <div id="photo-container-id" class="photo-container">
         {% for image in unranked_images %}
-        <img style="position: static;" class="usable-photo" id="{{ image }}" src="static/{{ image }}" onclick="fillNameField('{{ image }}')">
+        <img style="position: static;" class="usable-photo" id="{{ image }}" src="static/uploaded-images/{{ image }}" onclick="fillNameField('{{ image }}')">
         {% endfor %}
     </div>
     <script>

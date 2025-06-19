@@ -6,12 +6,17 @@ from sqlalchemy import and_
 from flask_migrate import Migrate
 from PIL import Image
 from PIL.ExifTags import TAGS
+from werkzeug.utils import secure_filename
 import logging
+import json
 
 # from migrations.env import get_engine
 
 config_path = "config"
 static_path = "static"
+image_path = os.path.join(static_path, "uploaded-images")
+export_path = "exported-list"
+temp_path = "temp"
 
 app = Flask(__name__,
     instance_path=os.path.join(os.path.dirname(os.path.dirname(__file__)), 'instance'),
@@ -20,7 +25,6 @@ app.config.from_object(config_path)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 logger = logging.getLogger("werkzeug")
-source_folder = "source-photos/"
 
 class ImageModel(db.Model):
     __tablename__ = "images"
@@ -35,11 +39,11 @@ class StaticResourceLogFilter(logging.Filter):
 
 def save_all_images():
     # Sort all the image names by the date the corresponding image was taken
-    image_names = os.listdir(source_folder)
+    image_names = os.listdir(temp_path)
     # Where sorted names are stored
     new_image_data = []
     for name in image_names:
-        path = source_folder + name
+        path = os.path.join(temp_path, name)
         exif = Image.open(path)._getexif()
         for tagid in exif:
             tagname = TAGS.get(tagid, tagid)
@@ -53,25 +57,43 @@ def save_all_images():
     new_image_names = []
     counter = 1
     for image in new_image_data:
-        path = source_folder + image["name"]
+        path = os.path.join(temp_path, image["name"])
         image_source = open(path, "rb")
         binary_source = image_source.read()
-        new_image = open(static_path + "/image" + str(counter) + ".jpg", "wb")
+        new_image = open(os.path.join(image_path, "image" + str(counter) + ".jpg"), "wb")
         new_image.write(binary_source)
         new_image_names.append("image" + str(counter) + ".jpg")
         counter += 1
+        image_source.close()
+        new_image.close()
+
+    # Removing temp photos and all database records
+    for temp_image in os.listdir(temp_path):
+        os.remove(os.path.join(temp_path, temp_image))
+    os.removedirs(temp_path)
+    with app.app_context():
+        all_images = db.session.execute(db.select(ImageModel)).scalars().all()
+        for image in all_images:
+            db.session.delete(image)
+        db.session.commit()
+    update_local_images("S")
+    update_local_images("A")
+    update_local_images("B")
+    update_local_images("C")
+    update_local_images("D")
     return new_image_names
 
 def get_saved_images(rank=None):
     if rank is None:
         name_list = []
-        for name in os.listdir(static_path):
+        for name in os.listdir(image_path):
             if name.startswith("image"):
                 with app.app_context():
                     test_query = db.session.execute(db.select(ImageModel).where(ImageModel.name == name)).scalars().first()
                 if test_query is None:
                     name_list.append(name)
         name_list = sorted(name_list, key=lambda name: get_name_number(name))
+        print(name_list)
         return name_list
     else:
         with app.app_context():
@@ -128,6 +150,10 @@ def get_highest_order(rank):
         images = db.session.execute(db.select(ImageModel).where(ImageModel.rank == rank)).scalars().all()
         return len(images)
 
+def init_directories():
+    os.makedirs(image_path, exist_ok=True)
+    os.makedirs(export_path, exist_ok=True)
+
 s_images = get_saved_images("S")
 a_images = get_saved_images("A")
 b_images = get_saved_images("B")
@@ -137,7 +163,7 @@ d_images = get_saved_images("D")
 @app.route("/")
 def index():
     unranked_images = get_saved_images()
-    return render_template("base.html",
+    return render_template("index.html",
                            s_images=s_images,
                            a_images=a_images,
                            b_images=b_images,
@@ -244,8 +270,7 @@ def change_order():
 
 @app.route("/export-list", methods=["POST"])
 def export_list():
-    os.makedirs("exported-list", exist_ok=True)
-    exported_list = open("exported-list/exported-list.txt", "wt")
+    exported_list = open(os.path.join(export_path, "exported-list.txt"), "wt")
     s_images = db.session.execute(db.select(ImageModel).where(ImageModel.rank == "S").order_by(ImageModel.order)).scalars().all()
     a_images = db.session.execute(db.select(ImageModel).where(ImageModel.rank == "A").order_by(ImageModel.order)).scalars().all()
     b_images = db.session.execute(db.select(ImageModel).where(ImageModel.rank == "B").order_by(ImageModel.order)).scalars().all()
@@ -260,6 +285,19 @@ def export_list():
     exported_list.close()
     return redirect("/")
 
+@app.route("/upload-images", methods=["POST"])
+def upload_images():
+    files = request.files.getlist("images")
+    for image in os.listdir(image_path):
+        path = os.path.join(image_path, image)
+        os.remove(path)
+    os.makedirs(temp_path, exist_ok=True)
+    for file in files:
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(temp_path, filename))
+    save_all_images()
+    return redirect("/")
+
 
 # with app.app_context():
 #     image = ImageModel.query.get(1)
@@ -267,4 +305,5 @@ def export_list():
 #     db.session.commit()
 
 logger.addFilter(StaticResourceLogFilter())
+init_directories()
 app.run()
