@@ -4,6 +4,14 @@ button {
     margin: 3px;
 }
 
+h1 {
+    font-family: Arial;
+}
+
+p {
+    font-family: Arial;
+}
+
 .tier-list-container {
     display: flex;
     flex-flow: column nowrap;
@@ -74,6 +82,12 @@ button {
 .button-spacing {
     display: inline-block;
     width: 100px;
+}
+
+.nav-item {
+    font-size: 20px;
+    font-family: Arial;
+    margin: 10px;
 }
 
 #name-input {

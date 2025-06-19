@@ -171,6 +171,10 @@ def index():
                            d_images=d_images,
                            unranked_images=unranked_images)
 
+@app.route("/how-to-use")
+def how_to_use():
+    return render_template("how-to-use.html")
+
 # Move an image to a rank, from the unranked section or from another rank
 @app.route("/move/<rank>", methods=["POST"])
 def move(rank):

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}How To Use{% endblock %}
+{% block content %}
+<h1>How To Use This Tier List</h1>
+<p>To start, upload all the image files you want to rank. JPG and PNG are accepted only. When you upload files, it will overwrite
+all previous uploaded files, and all ranked images will be removed from the list, so be careful!</p>
+<p>After uploading, click on an image to select it, then press the corresponding rank button to move the selected image to that rank.
+If you want to remove an image from the list, select the image and press the remove button. If you want to change the order of an image
+within a rank, select the image, input an order number into the order input, and press the change order button.</p>
+<p>If you want to export the entire list as one, basic, continuous list, press the export list button. It will export the list as a
+simple text file to the "exported-list" directory within the app files.</p>
+<p>If you are using a device with a keyboard, and preferably a mouse/trackpad, you can use shortcuts. You can move an image to a rank by selecting it and pressing the
+corresponding rank letter on your keyboard (S, A, etc). If you want to remove an image from the list, select it and press 'r'.
+This last shortcut can technically apply to users on a touchscreen device, but it is harder to use. If you want to change the order of an
+image, select it and click on the order label in the top left corner of the image that you want the selected image to take the place of.</p>
+{% endblock %}

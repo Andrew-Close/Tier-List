@@ -1,142 +1,136 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Tier List</title>
-    <link rel="stylesheet" href="static/style.css">
-</head>
-<body>
-    <div class="tier-list-container">
-        <div id="s-row" class="tier-list-row">
-            <div class="row-label" style="background-color: red;">
-                <p class="row-label-text">S (absolutely peak, some of my favorites)</p>
-            </div>
-            <div class="row-content">
-                {% for image in s_images %}
-                <div class="ranked-photo-container">
-                    <img class="usable-photo" id="{{ image.name }}" src="static/uploaded-images/{{ image.name }}" onclick="fillNameField('{{ image.name }}')">
-                    <p class="order-label" onclick="changeOrder({{ image.order }})">{{ image.order }}</p>
-                </div>
-                {% endfor %}
-            </div>
+{% extends 'base.html' %}
+{% block title %}Tier List{% endblock %}
+{% block content %}
+<div class="tier-list-container">
+    <div id="s-row" class="tier-list-row">
+        <div class="row-label" style="background-color: red;">
+            <p class="row-label-text">S (absolutely peak, some of my favorites)</p>
         </div>
-        <div id="a-row" class="tier-list-row">
-            <div class="row-label" style="background-color: orange;">
-                <p class="row-label-text">A (very good photos, some that I like a lot)</p>
+        <div class="row-content">
+            {% for image in s_images %}
+            <div class="ranked-photo-container">
+                <img class="usable-photo" id="{{ image.name }}" src="static/uploaded-images/{{ image.name }}" onclick="fillNameField('{{ image.name }}')">
+                <p class="order-label" onclick="changeOrder({{ image.order }})">{{ image.order }}</p>
             </div>
-            <div class="row-content">
-                {% for image in a_images %}
-                <div class="ranked-photo-container">
-                    <img class="usable-photo" id="{{ image.name }}" src="static/uploaded-images/{{ image.name }}" onclick="fillNameField('{{ image.name }}')">
-                    <p class="order-label" onclick="changeOrder({{ image.order }})">{{ image.order }}</p>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        <div id="b-row" class="tier-list-row">
-            <div class="row-label" style="background-color: yellow;">
-                <p class="row-label-text">B (good photos, not memorable but still good)</p>
-            </div>
-            <div class="row-content">
-                {% for image in b_images %}
-                <div class="ranked-photo-container">
-                    <img class="usable-photo" id="{{ image.name }}" src="static/uploaded-images/{{ image.name }}" onclick="fillNameField('{{ image.name }}')">
-                    <p class="order-label" onclick="changeOrder({{ image.order }})">{{ image.order }}</p>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        <div id="c-row" class="tier-list-row">
-            <div class="row-label" style="background-color: green;">
-                <p class="row-label-text">C (ok photos, but not my favorites)</p>
-            </div>
-            <div class="row-content">
-                {% for image in c_images %}
-                <div class="ranked-photo-container">
-                    <img class="usable-photo" id="{{ image.name }}" src="static/uploaded-images/{{ image.name }}" onclick="fillNameField('{{ image.name }}')">
-                    <p class="order-label" onclick="changeOrder({{ image.order }})">{{ image.order }}</p>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        <div id="d-row" class="tier-list-row">
-            <div class="row-label" style="background-color: blue;">
-                <p class="row-label-text">D (not good)</p>
-            </div>
-            <div class="row-content">
-                {% for image in d_images %}
-                <div class="ranked-photo-container">
-                    <img class="usable-photo" id="{{ image.name }}" src="static/uploaded-images/{{ image.name }}" onclick="fillNameField('{{ image.name }}')">
-                    <p class="order-label" onclick="changeOrder({{ image.order }})">{{ image.order }}</p>
-                </div>
-                {% endfor %}
-            </div>
+            {% endfor %}
         </div>
     </div>
-    <form id="controls" method="POST">
-        <input id="name-input" type="text" name="name">
-        <button id="s-submit" type="submit" name="S-button" formaction="/move/S">S</button>
-        <button id="a-submit" type="submit" name="A-button" formaction="/move/A">A</button>
-        <button id="b-submit" type="submit" name="B-button" formaction="/move/B">B</button>
-        <button id="c-submit" type="submit" name="C-button" formaction="/move/C">C</button>
-        <button id="d-submit" type="submit" name="D-button" formaction="/move/D">D</button>
-        <button id="remove-submit" type="submit" name="remove-button" formaction="/remove">Remove</button>
-        <div class="button-spacing"></div>
-        <input id="order-input" type="text" name="order" placeholder="Order">
-        <button id="order-submit" type="submit" name="change-order-button" formaction="/change-order">Change Order</button>
-        <div class="button-spacing"></div>
-        <button type="submit" name="export-list" formaction="/export-list">Export List</button>
-    </form>
-    <form action="/upload-images" method="POST" enctype="multipart/form-data">
-        <button type="button" onclick="document.getElementById('images-upload').click();">Upload Images</button>
-        <input id="images-upload" type="file" name="images" accept="image/jpeg, image/png" multiple onchange="document.getElementById('images-submit').click();">
-        <button id="images-submit" type="submit">Submit</button>
-    </form>
-    <div id="photo-container-id" class="photo-container">
-        {% for image in unranked_images %}
-        <img style="position: static;" class="usable-photo" id="{{ image }}" src="static/uploaded-images/{{ image }}" onclick="fillNameField('{{ image }}')">
-        {% endfor %}
+    <div id="a-row" class="tier-list-row">
+        <div class="row-label" style="background-color: orange;">
+            <p class="row-label-text">A (very good photos, some that I like a lot)</p>
+        </div>
+        <div class="row-content">
+            {% for image in a_images %}
+            <div class="ranked-photo-container">
+                <img class="usable-photo" id="{{ image.name }}" src="static/uploaded-images/{{ image.name }}" onclick="fillNameField('{{ image.name }}')">
+                <p class="order-label" onclick="changeOrder({{ image.order }})">{{ image.order }}</p>
+            </div>
+            {% endfor %}
+        </div>
     </div>
-    <script>
-        function fillNameField(name) {
-            nameInput = document.getElementById("name-input");
-            nameInput.value = name;
-            all_images = document.getElementsByClassName("usable-photo");
-            console.log(all_images);
+    <div id="b-row" class="tier-list-row">
+        <div class="row-label" style="background-color: yellow;">
+            <p class="row-label-text">B (good photos, not memorable but still good)</p>
+        </div>
+        <div class="row-content">
+            {% for image in b_images %}
+            <div class="ranked-photo-container">
+                <img class="usable-photo" id="{{ image.name }}" src="static/uploaded-images/{{ image.name }}" onclick="fillNameField('{{ image.name }}')">
+                <p class="order-label" onclick="changeOrder({{ image.order }})">{{ image.order }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div id="c-row" class="tier-list-row">
+        <div class="row-label" style="background-color: green;">
+            <p class="row-label-text">C (ok photos, but not my favorites)</p>
+        </div>
+        <div class="row-content">
+            {% for image in c_images %}
+            <div class="ranked-photo-container">
+                <img class="usable-photo" id="{{ image.name }}" src="static/uploaded-images/{{ image.name }}" onclick="fillNameField('{{ image.name }}')">
+                <p class="order-label" onclick="changeOrder({{ image.order }})">{{ image.order }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div id="d-row" class="tier-list-row">
+        <div class="row-label" style="background-color: blue;">
+            <p class="row-label-text">D (not good)</p>
+        </div>
+        <div class="row-content">
+            {% for image in d_images %}
+            <div class="ranked-photo-container">
+                <img class="usable-photo" id="{{ image.name }}" src="static/uploaded-images/{{ image.name }}" onclick="fillNameField('{{ image.name }}')">
+                <p class="order-label" onclick="changeOrder({{ image.order }})">{{ image.order }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<form id="controls" method="POST">
+    <input id="name-input" type="text" name="name">
+    <button id="s-submit" type="submit" name="S-button" formaction="/move/S">S</button>
+    <button id="a-submit" type="submit" name="A-button" formaction="/move/A">A</button>
+    <button id="b-submit" type="submit" name="B-button" formaction="/move/B">B</button>
+    <button id="c-submit" type="submit" name="C-button" formaction="/move/C">C</button>
+    <button id="d-submit" type="submit" name="D-button" formaction="/move/D">D</button>
+    <button id="remove-submit" type="submit" name="remove-button" formaction="/remove">Remove</button>
+    <div class="button-spacing"></div>
+    <input id="order-input" type="text" name="order" placeholder="Order">
+    <button id="order-submit" type="submit" name="change-order-button" formaction="/change-order">Change Order</button>
+    <div class="button-spacing"></div>
+    <button type="submit" name="export-list" formaction="/export-list">Export List</button>
+</form>
+<form action="/upload-images" method="POST" enctype="multipart/form-data">
+    <button type="button" onclick="document.getElementById('images-upload').click();">Upload Images</button>
+    <input id="images-upload" type="file" name="images" accept="image/jpeg, image/png" multiple onchange="document.getElementById('images-submit').click();">
+    <button id="images-submit" type="submit">Submit</button>
+</form>
+<div id="photo-container-id" class="photo-container">
+    {% for image in unranked_images %}
+    <img style="position: static;" class="usable-photo" id="{{ image }}" src="static/uploaded-images/{{ image }}" onclick="fillNameField('{{ image }}')">
+    {% endfor %}
+</div>
+<script>
+    function fillNameField(name) {
+        nameInput = document.getElementById("name-input");
+        nameInput.value = name;
+        all_images = document.getElementsByClassName("usable-photo");
+        console.log(all_images);
 
-            for (let i = 0; i < all_images.length; i++) {
-                if (all_images[i].id == name) {
-                    all_images[i].className = "active-image usable-photo";
-                } else {
-                    all_images[i].className = "usable-photo";
-                }
+        for (let i = 0; i < all_images.length; i++) {
+            if (all_images[i].id == name) {
+                all_images[i].className = "active-image usable-photo";
+            } else {
+                all_images[i].className = "usable-photo";
             }
         }
+    }
 
-        function changeOrder(order) {
-            orderInput = document.getElementById("order-input");
-            orderSubmit = document.getElementById("order-submit");
-            orderInput.value = order;
-            orderSubmit.click();
-        }
+    function changeOrder(order) {
+        orderInput = document.getElementById("order-input");
+        orderSubmit = document.getElementById("order-submit");
+        orderInput.value = order;
+        orderSubmit.click();
+    }
 
-        document.addEventListener("keydown", e => {
-            if (!e.repeat) {
-                if (e.key.toLowerCase() == "s") {
-                    document.getElementById("s-submit").click();
-                } else if (e.key.toLowerCase() == "a") {
-                    document.getElementById("a-submit").click();
-                } else if (e.key.toLowerCase() == "b") {
-                    document.getElementById("b-submit").click();
-                } else if (e.key.toLowerCase() == "c") {
-                    document.getElementById("c-submit").click();
-                } else if (e.key.toLowerCase() == "d") {
-                    document.getElementById("d-submit").click();
-                } else if (e.key.toLowerCase() == "r") {
-                    document.getElementById("remove-submit").click();
-                }
+    document.addEventListener("keydown", e => {
+        if (!e.repeat) {
+            if (e.key.toLowerCase() == "s") {
+                document.getElementById("s-submit").click();
+            } else if (e.key.toLowerCase() == "a") {
+                document.getElementById("a-submit").click();
+            } else if (e.key.toLowerCase() == "b") {
+                document.getElementById("b-submit").click();
+            } else if (e.key.toLowerCase() == "c") {
+                document.getElementById("c-submit").click();
+            } else if (e.key.toLowerCase() == "d") {
+                document.getElementById("d-submit").click();
+            } else if (e.key.toLowerCase() == "r") {
+                document.getElementById("remove-submit").click();
             }
-        });
-    </script>
-</body>
-</html>
+        }
+    });
+</script>
+{% endblock %}
