@@ -248,6 +248,11 @@ def change_order():
 
     old_order = target_image.order
     rank = target_image.rank
+    if new_order > get_highest_order(rank):
+        new_order = get_highest_order(rank)
+    if new_order < 1:
+        new_order = 1
+
     if new_order > old_order:
         pointer = new_order
         # Make gap
