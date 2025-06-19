@@ -74,13 +74,9 @@ def get_saved_images(rank=None):
         name_list = sorted(name_list, key=lambda name: get_name_number(name))
         return name_list
     else:
-        name_list = []
         with app.app_context():
             images = db.session.execute(db.select(ImageModel).where(ImageModel.rank == rank)).scalars().all()
-        images = sorted(images, key=lambda image: image.order)
-        for image in images:
-            name_list.append(image.name)
-        return name_list
+        return sorted(images, key=lambda image: image.order)
 
 def get_name_number(name):
     starting_index = -1
@@ -153,8 +149,10 @@ def index():
 @app.route("/move/<rank>", methods=["POST"])
 def move(rank):
     image_name = request.form.get("name")
+
     if image_name == "":
         return redirect("/")
+
     target_image = db.session.execute(db.select(ImageModel).where(ImageModel.name == image_name)).scalars().first()
     old_rank = None
     # If image not in rank yet
@@ -176,29 +174,43 @@ def move(rank):
         db.session.commit()
         fix_orders(old_order, old_rank)
     update_local_images(rank=rank, old_rank=old_rank)
-    return redirect("/")
+    return redirect("/#" + rank.lower() + "-row")
 
 # Remove an image from a rank and place it back in the unranked section
 @app.route("/remove", methods=["POST"])
 def remove():
     image_name = request.form.get("name")
-    old_rank = None
+
     if image_name == "":
         return redirect("/")
+
     target_image = db.session.execute(db.select(ImageModel).where(ImageModel.name == image_name)).scalars().first()
-    if target_image is not None:
-        old_rank = target_image.rank
-        old_order = target_image.order
-        db.session.delete(target_image)
-        db.session.commit()
-        fix_orders(old_order, old_rank)
+
+    if target_image is None:
+        return redirect("/")
+
+    old_rank = target_image.rank
+    old_order = target_image.order
+    db.session.delete(target_image)
+    db.session.commit()
+    fix_orders(old_order, old_rank)
     update_local_images(old_rank=old_rank)
-    return redirect("/")
+    return redirect("/#" + old_rank.lower() + "-row")
 
 @app.route("/change-order", methods=["POST"])
 def change_order():
+    print("In change order")
     image_name = request.form.get("name")
-    new_order = int(request.form.get("order"))
+
+    if image_name == "":
+        return redirect("/")
+
+    try:
+        new_order = int(request.form.get("order"))
+    except ValueError:
+        print("Bad order")
+        return redirect("/")
+
     target_image = db.session.execute(db.select(ImageModel).where(ImageModel.name == image_name)).scalars().first()
 
     if target_image is None:
@@ -228,7 +240,7 @@ def change_order():
         # Remove gap made by moving image
         fix_orders(old_order, rank)
     update_local_images(rank=rank)
-    return redirect("/")
+    return redirect("/#" + rank.lower() + "-row")
 
 @app.route("/export-list", methods=["POST"])
 def export_list():
