@@ -84,8 +84,8 @@
 </form>
 <form action="/upload-images" method="POST" enctype="multipart/form-data">
     <button type="button" onclick="document.getElementById('images-upload').click();">Upload Images</button>
-    <input id="images-upload" type="file" name="images" accept="image/jpeg, image/png" multiple onchange="document.getElementById('images-submit').click();">
-    <button id="images-submit" type="submit">Submit</button>
+    <input id="images-upload" type="file" name="images" style="display: none;" accept="image/jpeg, image/png" multiple onchange="document.getElementById('images-submit').click();">
+    <button id="images-submit" type="submit" style="display: none;">Submit</button>
 </form>
 <div id="photo-container-id" class="photo-container">
     {% for image in unranked_images %}
